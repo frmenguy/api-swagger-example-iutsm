@@ -1,0 +1,401 @@
+openapi: 3.0.3
+info:
+  title: Info vacances
+  description: |-
+    Donne des informations sur les vacances scolaire
+  contact:
+    email: iut@stmalo.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://iut.stmalo.com/api/v1
+tags:
+  - name: vacances
+    description: Dates des vacances
+  - name: zones
+    description: Information sur les zones
+  - name: utilisateur
+    description: Operations pour l'utilisateur
+paths:
+  /vacances:
+    get:
+      tags:
+        - vacances
+      summary: Retoure la liste de vacances
+      description: Retoure la liste de vacances
+      operationId: getVacances
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vacances'
+  /vacances/adresse:
+    post:
+      tags:
+        - vacances
+      summary: Retoure la liste de vacances pour une adresse
+      description: Retoure la liste de vacances pour une adresse
+      operationId: getVacancesParAdresse
+      requestBody:
+        description: Adresse
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Adresse'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vacances'
+      security:
+        - api_key: []
+  /vacances/villes/{ville}:
+    get:
+      tags:
+        - vacances
+      summary: Recherche les vacances pour une ville
+      description: Recherche les dates de vacances par adresse postale
+      operationId: rechercheParVille
+      parameters:
+        - in: path
+          name: ville
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: recherche ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vacances'
+        '405':
+          description: Invalid input
+  /vacances/zones/{zone}:
+    get:
+      tags:
+        - vacances
+      summary: Recherche les vacances pour une ville
+      description: Recherche les dates de vacances par adresse postale
+      operationId: rechercheParZone
+      parameters:
+        - in: path
+          name: zone
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: recherche ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vacances'
+        '405':
+          description: Invalid input
+
+
+
+  /utilisateur:
+    post:
+      tags:
+        - utilisateur
+      summary: Créer un utilisateur
+      description: Créer un compte utilisateur.
+      operationId: createUtilisateur
+      requestBody:
+        description: Objet utilisateur
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Utilisateur'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Utilisateur'
+  /utilisateur/login:
+    get:
+      tags:
+        - utilisateur
+      summary: Connexion utilisateur
+      description: ''
+      operationId: loginUtilisateur
+      parameters:
+        - name: nom
+          in: query
+          description: nom d'utilisateur
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: mot de passe utilisateur
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the utilisateur
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Nom/mot de passe invalide
+  /utilisateur/logout:
+    get:
+      tags:
+        - utilisateur
+      summary: Déconnexion de l'utilisateur
+      description: ''
+      operationId: logoutUtilisateur
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+      security:
+        - api_key: []
+        - infovacances_auth: []
+  /utilisateur/{nom}:
+    get:
+      tags:
+        - utilisateur
+      summary: Récupérer les infos utilisateur par nom d'utilisateur
+      description: ''
+      operationId: getUtilisateurByName
+      parameters:
+        - name: nom
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Utilisateur'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Utilisateur'
+        '400':
+          description: Nom utilisateur invalide
+        '404':
+          description: Utilisateur non trouvé
+      security:
+        - api_key: []
+        - infovacances_auth: []
+    put:
+      tags:
+        - utilisateur
+      summary: Mise à jour des informations utilisateur
+      description: ''
+      operationId: updateUtilisateur
+      parameters:
+        - name: nom
+          in: path
+          description: utilisateur à mettre à jour
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent utilisateur in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+      responses:
+        default:
+          description: successful operation
+      security:
+        - api_key: []
+        - infovacances_auth: []
+    patch:
+      tags:
+        - utilisateur
+      summary: Mise à jour partielle des informations utilisateur
+      description: ''
+      operationId: patchUtilisateur
+      parameters:
+        - name: nom
+          in: path
+          description: utilisateur à mettre à jour
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Modifie un utilisateur existant
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Utilisateur'
+      responses:
+        default:
+          description: successful operation
+      security:
+        - api_key: []
+        - infovacances_auth: []
+    delete:
+      tags:
+        - utilisateur
+      summary: Supprimer son compte utilisateur
+      description: ''
+      operationId: deleteUtilisateur
+      parameters:
+        - name: nom
+          in: path
+          description: Nom utilisateur à supprimer
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Nom d'utilisateur invalide
+        '404':
+          description: Utilisateur non trouvé
+      security:
+        - api_key: []
+        - infovacances_auth: []
+components:
+  schemas:
+    Vacance:
+      type: object
+      properties:
+        date_debut:
+          type: string
+          format: date-time
+        date_fin:
+          type: string
+          format: date-time
+        description:
+          type: string
+          example: 'Vacances de la Toussaint'
+        zone:
+          type: string
+          example: 'Zone B'
+      xml:
+        name: vacance
+    Vacances:
+      type: array
+      items:
+        $ref: '#/components/schemas/Vacance'
+      xml:
+        name: zones
+    Adresse:
+      type: object
+      properties:
+        numero:
+          type: integer
+          format: int64
+          example: 40
+        rue:
+          type: string
+          example: Rue de la Croix Desilles
+        code:
+          type: integer
+          format: int32
+          example: 35400
+        ville:
+          type: string
+          example: Saint-Malo
+      xml:
+        name: adresse
+
+    Utilisateur:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        utilisateurname:
+          type: string
+          example: theUtilisateur
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Zone'
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+        utilisateurStatus:
+          type: integer
+          description: Utilisateur Status
+          format: int32
+          example: 1
+      xml:
+        name: utilisateur
+  requestBodies:
+    UtilisateurArray:
+      description: List of utilisateur object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Utilisateur'
+  securitySchemes:
+    infovacances_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://iut.stmalo.com/oauth/authorize
+          scopes:
+            write:zones: modifie vos zones dans votre compte
+            read:zones: liste vos zones
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
