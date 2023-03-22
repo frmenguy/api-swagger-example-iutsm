@@ -81,8 +81,8 @@ paths:
     get:
       tags:
         - vacances
-      summary: Recherche les vacances pour une ville
-      description: Recherche les dates de vacances par adresse postale
+      summary: Recherche les vacances pour une zone
+      description: Recherche les dates de vacances par zone scolaire
       operationId: rechercheParZone
       parameters:
         - in: path
