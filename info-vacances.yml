@@ -326,7 +326,7 @@ components:
       items:
         $ref: '#/components/schemas/Vacance'
       xml:
-        name: zones
+        name: vacances
     Adresse:
       type: object
       properties:
